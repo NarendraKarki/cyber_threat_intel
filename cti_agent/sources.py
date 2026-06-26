@@ -17,6 +17,7 @@ import json
 import re
 import time
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from xml.etree import ElementTree as ET
 
 from . import config
@@ -28,6 +29,18 @@ def _get(url, timeout=None):
         "Accept": "application/json, application/xml, text/xml, */*",
         "Accept-Language": "en-US,en;q=0.9",
     })
+
+
+def _to_iso(s):
+    """Normalize an RFC-822 RSS date (e.g. 'Thu, 25 Jun 26 12:00:00 +0000')
+    to an ISO date string the frontend can parse; pass through on failure."""
+    s = (s or "").strip()
+    if not s:
+        return ""
+    try:
+        return parsedate_to_datetime(s).date().isoformat()
+    except Exception:
+        return s
 
 
 def _strip_html(text):
@@ -80,17 +93,26 @@ def fetch_cisa_advisories():
     items = []
     for e in entries[: config.MAX_RSS_ITEMS]:
         children = {tag(c): c for c in e}
-        title = (children.get("title").text if children.get("title") is not None else "") or ""
+        # NOTE: ElementTree elements are falsy when they have no child elements,
+        # so use explicit `is not None` lookups — never `a or b` on elements.
+        def pick(*names):
+            for n in names:
+                el = children.get(n)
+                if el is not None:
+                    return el
+            return None
+        title_el = pick("title")
+        title = (title_el.text if title_el is not None else "") or ""
         # link can be element text (RSS) or href attribute (Atom)
-        link_el = children.get("link")
+        link_el = pick("link")
         link = ""
         if link_el is not None:
             link = link_el.text or link_el.get("href") or ""
-        desc_el = children.get("description") or children.get("summary") or children.get("content")
+        desc_el = pick("description", "summary", "content")
         summary = _strip_html(desc_el.text if desc_el is not None else "")
-        pub_el = children.get("pubDate") or children.get("updated") or children.get("published")
-        published = (pub_el.text if pub_el is not None else "") or ""
-        guid_el = children.get("guid") or children.get("id")
+        pub_el = pick("pubDate", "updated", "published", "date")
+        published = _to_iso((pub_el.text if pub_el is not None else "") or "")
+        guid_el = pick("guid", "id")
         gid = (guid_el.text if guid_el is not None else "") or link or title
         items.append({
             "id": gid.strip(),
