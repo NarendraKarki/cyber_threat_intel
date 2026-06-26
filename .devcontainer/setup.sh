@@ -7,6 +7,9 @@ set -u
 echo "[setup] Installing Python dependencies..."
 pip3 install -r requirements.txt || echo "[setup] pip install had issues (certifi optional)"
 
+echo "[setup] Installing zstd (required by Ollama installer)..."
+sudo apt-get update -qq && sudo apt-get install -y -qq zstd >/dev/null 2>&1 || true
+
 echo "[setup] Installing Ollama..."
 curl -fsSL https://ollama.com/install.sh | sh || {
   echo "[setup] Ollama install failed — app will run in heuristics mode."
