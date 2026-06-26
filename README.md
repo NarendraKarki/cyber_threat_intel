@@ -8,6 +8,25 @@ It is built entirely on the Python standard library (no web framework) and
 uses a **local Ollama model** for reasoning, so it runs offline with no API
 keys and no cloud calls.
 
+## Highlights
+
+- 🔒 **Fully offline AI** — reasoning runs on a local Ollama model; no cloud,
+  no API keys, nothing leaves your machine.
+- 🤖 **Agentic pipeline** — *collect → classify → enrich → brief*, producing a
+  per-sector executive summary and a recommended action per threat.
+- 🎯 **Sector-aware** — maps live threats to **Financial**, **Healthcare**, and
+  **Government**, each panel led by sector-specific intel.
+- 🧱 **Dependency-free core** — pure Python standard library; degrades
+  gracefully to keyword heuristics when the LLM is unavailable.
+- 🛰️ **Reputable live sources** — CISA KEV, CISA Advisories, NVD, and (optional)
+  abuse.ch ThreatFox, with each threat showing its reported date and active status.
+- ☁️ **Run on demand** — locally, or one-click in **GitHub Codespaces**.
+
+## Screenshot
+
+<!-- Add a dashboard screenshot at docs/dashboard.png, then it shows here: -->
+![Cyber Threat Intel Agent dashboard](docs/dashboard.png)
+
 ## What the agent does
 
 The agent runs a multi-step pipeline on each sweep:
