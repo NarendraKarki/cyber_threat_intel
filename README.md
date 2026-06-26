@@ -47,6 +47,22 @@ python3 -m cti_agent.server
 
 A sweep with the LLM enabled takes a few minutes on a local CPU model.
 
+### Run on demand in GitHub Codespaces
+
+This repo ships a `.devcontainer`, so you can run the whole setup in the cloud
+without installing anything locally:
+
+1. On GitHub: **Code → Codespaces → Create codespace on main**.
+2. Wait for setup (installs Python deps + Ollama, pulls the lightweight `phi3`
+   model). The dashboard port (8077) auto-forwards.
+3. In the Codespace terminal: `python3 -m cti_agent.server`, then open the
+   forwarded **8077** URL and click **Run Intelligence Sweep**.
+4. **Stop** (or delete) the Codespace when done — it also auto-stops when idle.
+
+Codespaces are CPU-only, so LLM sweeps are slower there; for snappy testing use
+heuristics mode: `CTI_LLM=0 python3 -m cti_agent.server`. The free tier
+(120 core-hours/month) is ample for on-demand use.
+
 ### CLI / JSON
 
 ```bash

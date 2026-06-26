@@ -1,0 +1,21 @@
+{
+  "name": "Sentinel CTI",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "forwardPorts": [8077],
+  "portsAttributes": {
+    "8077": {
+      "label": "Sentinel CTI dashboard",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "remoteEnv": {
+    "CTI_MODEL": "phi3:latest"
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "nohup ollama serve >/tmp/ollama.log 2>&1 & disown || true",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  }
+}
