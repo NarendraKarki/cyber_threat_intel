@@ -50,6 +50,15 @@ class CTIAgent:
             item.get("title", ""), item.get("summary", ""),
             " ".join(item.get("tags", [])),
         ]).lower()
+        # Drop CISA's "Critical Infrastructure Sectors: <list>" boilerplate —
+        # it names many sectors (Government, Healthcare, ...) and was causing
+        # unrelated advisories (e.g. an IP camera) to match several sectors.
+        # Classify on the advisory's actual content instead; the LLM resolves
+        # anything left ambiguous.
+        text = re.sub(
+            r"critical infrastructure sectors:.*?"
+            r"(countries/areas deployed|company headquarters|background|$)",
+            " ", text, flags=re.S)
         scores = {}
         for sector, matchers in _KEYWORD_RE.items():
             hits = sum(1 for _, rx in matchers if rx.search(text))
