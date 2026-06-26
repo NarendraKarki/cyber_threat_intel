@@ -31,9 +31,13 @@ SECTOR_KEYWORDS = {
         "government", "federal", "agency", ".gov", "municipal", "defense",
         "department of defense", "department of", "election", "public sector",
         "state agency", "military", "fbi", "nsa", "homeland",
-        "national security", "critical infrastructure", "scada",
-        "industrial control", "public safety", "census", "law enforcement",
+        "national security", "public safety", "census", "law enforcement",
         "intelligence community", "veterans affairs",
+        # NOTE: "critical infrastructure" / "scada" / "industrial control" were
+        # removed — they appear in CISA's standard "Critical Infrastructure
+        # Sectors:" advisory boilerplate and wrongly pulled medical/industrial
+        # advisories (e.g. DICOM) into Government. The LLM classifies these
+        # semantically instead.
     ],
 }
 
