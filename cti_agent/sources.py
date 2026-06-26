@@ -18,7 +18,7 @@ import re
 import time
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
-from xml.etree import ElementTree as ET
+import defusedxml.ElementTree as ET
 
 from . import config
 from .net import http_get, http_post_json

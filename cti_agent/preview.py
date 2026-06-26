@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cti_agent import server  # noqa: E402
 
-_cache = "/tmp/cti_report.json"
+import tempfile, os
+_cache = os.path.join(tempfile.gettempdir(), "cti_report.json")
 if os.path.exists(_cache):
     server._STATE["report"] = json.load(open(_cache))
     print(f"Preloaded cached report from {_cache}")
