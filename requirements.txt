@@ -1,3 +1,4 @@
 # Cyber Threat Intel Agent runs on the Python standard library. The only third-party
 # dependency is a CA bundle, used to verify TLS when fetching threat feeds.
 certifi>=2024.0.0
+defusedxml>=0.7.0
