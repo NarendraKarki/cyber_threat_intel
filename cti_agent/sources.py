@@ -128,6 +128,10 @@ def fetch_cisa_advisories():
             return None
         title_el = pick("title")
         title = (title_el.text if title_el is not None else "") or ""
+        # Skip redundant KEV-catalog announcement posts — those exploited CVEs
+        # already arrive (with detail) via the CISA KEV source.
+        if re.search(r"\badd(?:s|ed)?\b.*known exploited vulnerabilit", title, re.I):
+            continue
         # link can be element text (RSS) or href attribute (Atom)
         link_el = pick("link")
         link = ""
