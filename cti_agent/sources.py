@@ -43,6 +43,31 @@ def _to_iso(s):
         return s
 
 
+_CVSS_RE = re.compile(r"\bv[34](?:\.\d)?\s+(\d{1,2}(?:\.\d+)?)", re.I)
+
+
+def _severity_from_text(text):
+    """Derive a severity from CVSS scores embedded in advisory text
+    (e.g. 'CVSS ... v3 8.2'); returns the highest found, or None."""
+    best = None
+    for m in _CVSS_RE.findall(text or ""):
+        try:
+            s = float(m)
+        except ValueError:
+            continue
+        if 0.0 <= s <= 10.0 and (best is None or s > best):
+            best = s
+    if best is None:
+        return None
+    if best >= 9.0:
+        return "Critical"
+    if best >= 7.0:
+        return "High"
+    if best >= 4.0:
+        return "Medium"
+    return "Low"
+
+
 def _strip_html(text):
     if not text:
         return ""
@@ -121,9 +146,9 @@ def fetch_cisa_advisories():
             "source": "CISA Advisories",
             "url": link.strip(),
             "published": published.strip(),
-            # CISA advisories carry no CVSS score; label them clearly rather
-            # than showing a bare "Unknown" severity.
-            "severity": "Advisory",
+            # Use the CVSS score embedded in the advisory text when present;
+            # otherwise label it "Advisory" rather than a bare "Unknown".
+            "severity": _severity_from_text(summary) or "Advisory",
             "tags": [],
             "ransomware": False,
             "exploited": False,

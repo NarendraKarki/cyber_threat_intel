@@ -128,11 +128,14 @@ class CTIAgent:
                 seen[s].add(id(it))
 
         # Top-up: actively-exploited threats (every CISA KEV entry) and any
-        # critical vulnerability endanger all organisations. Surface them as
-        # cross-sector intel so no sector panel is starved. Tagged "generic",
-        # they always rank below sector-specific findings.
+        # critical CVE endanger all organisations. Surface them as cross-sector
+        # intel so no panel is starved (tagged "generic", always ranked below
+        # sector-specific findings). Advisories are excluded — an unrelated
+        # critical advisory shouldn't leak into every panel (the DICOM problem).
         generic = [it for it in items
-                   if it.get("exploited") or it.get("severity") == "Critical"]
+                   if it.get("exploited")
+                   or (it.get("severity") == "Critical"
+                       and it.get("source") != "CISA Advisories")]
         for sector in config.SECTORS:
             for it in generic:
                 if id(it) not in seen[sector]:
