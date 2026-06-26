@@ -1,4 +1,4 @@
-"""Central configuration for the Sentinel CTI agent."""
+"""Central configuration for the Cyber Threat Intel Agent agent."""
 import os
 
 # ---------------------------------------------------------------------------
@@ -76,4 +76,4 @@ HTTP_TIMEOUT = int(os.getenv("CTI_HTTP_TIMEOUT", "20"))
 # A browser-like UA: some CDNs (CISA fronted by Akamai) 403 unknown agents.
 USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
               "AppleWebKit/537.36 (KHTML, like Gecko) "
-              "Chrome/124.0 Safari/537.36 Sentinel-CTI/1.0")
+              "Chrome/124.0 Safari/537.36 CTI-Agent/1.0")

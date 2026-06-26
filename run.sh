@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sentinel CTI — one-command launcher.
+# Cyber Threat Intel Agent — one-command launcher.
 #   ./run.sh            start with the local LLM (Ollama) if available
 #   CTI_LLM=0 ./run.sh  fast heuristics mode (no model needed)
 #

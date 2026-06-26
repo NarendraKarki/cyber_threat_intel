@@ -1,4 +1,4 @@
-"""Sentinel CTI — the AI agent.
+"""Cyber Threat Intel Agent — the AI agent.
 
 Pipeline (agentic, multi-step):
     1. COLLECT   pull raw intel from every configured source

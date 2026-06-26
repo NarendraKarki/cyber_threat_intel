@@ -1,4 +1,4 @@
-"""Sentinel CTI web dashboard — stdlib http.server, no dependencies.
+"""Cyber Threat Intel Agent web dashboard — stdlib http.server, no dependencies.
 
 Routes:
     GET  /                 dashboard UI
@@ -35,7 +35,7 @@ def _run_sweep():
 INDEX_HTML = """<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sentinel CTI — Threat Intelligence Agent</title>
+<title>Cyber Threat Intel Agent</title>
 <style>
 :root{--bg:#0b0f17;--panel:#131a26;--panel2:#0f1622;--line:#222e44;--txt:#dbe5f3;
 --muted:#7e8aa0;--accent:#3ea6ff;--crit:#ff4d5e;--high:#ff9f43;--med:#ffd24d;--low:#48d49b;}
@@ -78,7 +78,7 @@ display:flex;align-items:center;gap:8px}
 </style></head><body>
 <header>
   <div class="logo">CTI</div>
-  <div><h1>Sentinel CTI</h1><div class="sub">AI threat-intelligence agent · Financial · Healthcare · Government</div></div>
+  <div><h1>Cyber Threat Intel Agent</h1><div class="sub">AI threat-intelligence agent · Financial · Healthcare · Government</div></div>
   <button id="run">▶ Run Intelligence Sweep</button>
   <div class="meta" id="meta">No sweep run yet.</div>
 </header>
@@ -177,7 +177,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main(host="127.0.0.1", port=8077):
     srv = ThreadingHTTPServer((host, port), Handler)
-    print(f"Sentinel CTI dashboard → http://{host}:{port}")
+    print(f"Cyber Threat Intel Agent dashboard → http://{host}:{port}")
     print("Press Ctrl+C to stop.")
     try:
         srv.serve_forever()

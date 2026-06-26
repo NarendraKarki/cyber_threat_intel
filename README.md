@@ -1,4 +1,4 @@
-# Sentinel CTI — AI Threat-Intelligence Agent
+# Cyber Threat Intel Agent
 
 An AI-agent application that, **when triggered**, fetches cyber threat
 intelligence from reputable sources and presents it across three sector

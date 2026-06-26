@@ -1,10 +1,10 @@
 {
-  "name": "Sentinel CTI",
+  "name": "Cyber Threat Intel Agent",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "forwardPorts": [8077],
   "portsAttributes": {
     "8077": {
-      "label": "Sentinel CTI dashboard",
+      "label": "Cyber Threat Intel Agent dashboard",
       "onAutoForward": "openBrowser"
     }
   },
