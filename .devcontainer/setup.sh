@@ -5,10 +5,12 @@
 set -u
 
 echo "[setup] Installing Python dependencies..."
-pip3 install -r requirements.txt || echo "[setup] pip install had issues (certifi optional)"
+pip3 install -r requirements.txt || echo "[setup] pip install had issues"
 
-echo "[setup] Installing zstd (required by Ollama installer)..."
-sudo apt-get update -qq && sudo apt-get install -y -qq zstd >/dev/null 2>&1 || true
+echo "[setup] Installing system dependencies..."
+sudo apt-get update && sudo apt-get install -y zstd || {
+  echo "[setup] apt install failed — Ollama may not install."
+}
 
 echo "[setup] Installing Ollama..."
 curl -fsSL https://ollama.com/install.sh | sh || {
@@ -16,12 +18,17 @@ curl -fsSL https://ollama.com/install.sh | sh || {
   exit 0
 }
 
+echo "[setup] Verifying Ollama installed..."
+which ollama && ollama --version || {
+  echo "[setup] Ollama binary not found after install."
+  exit 0
+}
+
 echo "[setup] Starting Ollama..."
 nohup ollama serve >/tmp/ollama.log 2>&1 &
-# Wait for the daemon to accept connections.
-for i in $(seq 1 15); do
+for i in $(seq 1 30); do
   curl -s http://localhost:11434/api/tags >/dev/null 2>&1 && break
-  sleep 1
+  sleep 2
 done
 
 echo "[setup] Pulling phi3 model (one-time, ~2GB)..."
@@ -29,4 +36,3 @@ ollama pull phi3 || echo "[setup] model pull skipped — run 'ollama pull phi3' 
 
 echo "[setup] Done."
 echo "[setup] Start the app with:  python3 -m cti_agent.server"
-echo "[setup] Then open the forwarded port 8077 and click 'Run Intelligence Sweep'."
