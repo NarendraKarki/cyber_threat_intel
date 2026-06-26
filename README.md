@@ -108,3 +108,7 @@ cti_agent/
   level, so `net.py` transparently falls back to the system `curl`.
 - Sources are public and unauthenticated. This is a **defensive** tool: it only
   reads and summarizes published threat data.
+- **NVD is slow when keyless** — its public API is rate-limited and can take
+  30–90 s. The agent gives it a longer timeout + retries and **skips it
+  gracefully** if it still fails (the sweep always completes on CISA KEV +
+  Advisories). For consistently fast sweeps, disable NVD with **`CTI_MAX_NVD=0`**.

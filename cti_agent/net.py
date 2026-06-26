@@ -57,7 +57,8 @@ def http_get(url, user_agent, timeout, extra_headers=None):
         if e.code in (403, 406, 429, 503):
             return _curl_get(url, user_agent, timeout)
         raise
-    except (urllib.error.URLError, ssl.SSLError):
+    except (urllib.error.URLError, ssl.SSLError, TimeoutError):
+        # Includes read timeouts — curl often fares better on slow/large responses.
         return _curl_get(url, user_agent, timeout)
 
 

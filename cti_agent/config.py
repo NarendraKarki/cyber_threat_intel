@@ -55,6 +55,13 @@ MAX_THREATFOX_ITEMS = int(os.getenv("CTI_MAX_TF", "40"))
 
 # NVD: look back this many days for newly-published CVEs.
 NVD_LOOKBACK_DAYS = int(os.getenv("CTI_NVD_DAYS", "7"))
+# NVD's keyless API can be slow with a large result set, so give it more time
+# and a few retries (separate from the general HTTP timeout).
+NVD_TIMEOUT = int(os.getenv("CTI_NVD_TIMEOUT", "90"))
+NVD_RETRIES = int(os.getenv("CTI_NVD_RETRIES", "2"))
+# Fetch the whole look-back window (so client-side sorting yields the newest
+# CVEs); lower this on very slow links to shrink the payload.
+NVD_PAGE_SIZE = int(os.getenv("CTI_NVD_PAGE", "2000"))
 
 # abuse.ch ThreatFox now requires a free Auth-Key. When unset, the source is
 # skipped gracefully (no error). Get one at https://auth.abuse.ch/.

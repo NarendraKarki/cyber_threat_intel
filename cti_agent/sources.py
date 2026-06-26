@@ -15,6 +15,7 @@ Each fetcher returns a list of normalized threat items:
 """
 import json
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from xml.etree import ElementTree as ET
 
@@ -22,8 +23,8 @@ from . import config
 from .net import http_get, http_post_json
 
 
-def _get(url):
-    return http_get(url, config.USER_AGENT, config.HTTP_TIMEOUT, extra_headers={
+def _get(url, timeout=None):
+    return http_get(url, config.USER_AGENT, timeout or config.HTTP_TIMEOUT, extra_headers={
         "Accept": "application/json, application/xml, text/xml, */*",
         "Accept-Language": "en-US,en;q=0.9",
     })
@@ -131,13 +132,32 @@ def _nvd_severity(cve):
 
 
 def fetch_nvd_recent():
-    """Recently-published CVEs from the NIST National Vulnerability Database."""
+    """Recently-published CVEs from the NIST National Vulnerability Database.
+
+    NVD's keyless API is slow and rate-limited; set CTI_MAX_NVD=0 to skip it
+    entirely (CISA KEV + Advisories remain the fast, reliable core).
+    """
+    if config.MAX_NVD_ITEMS <= 0:
+        return []
     end = datetime.now(timezone.utc)
     start = end - timedelta(days=config.NVD_LOOKBACK_DAYS)
     fmt = "%Y-%m-%dT%H:%M:%S.000"
     url = (f"{config.SOURCES['NVD']}?pubStartDate={start.strftime(fmt)}"
-           f"&pubEndDate={end.strftime(fmt)}&resultsPerPage=2000")
-    data = json.loads(_get(url))
+           f"&pubEndDate={end.strftime(fmt)}&resultsPerPage={config.NVD_PAGE_SIZE}")
+    # NVD's keyless API is occasionally slow; retry with a longer timeout
+    # before giving up (the sweep still succeeds on other sources if it fails).
+    data = None
+    last_err = None
+    for attempt in range(config.NVD_RETRIES):
+        try:
+            data = json.loads(_get(url, timeout=config.NVD_TIMEOUT))
+            break
+        except Exception as exc:  # noqa: BLE001
+            last_err = exc
+            if attempt < config.NVD_RETRIES - 1:
+                time.sleep(6)  # respect NVD's recommended keyless request spacing
+    if data is None:
+        raise last_err
     rows = []
     for entry in data.get("vulnerabilities", []):
         cve = entry.get("cve", {})
