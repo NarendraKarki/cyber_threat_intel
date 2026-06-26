@@ -1,5 +1,11 @@
 # Cyber Threat Intel Agent
 
+![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-green)
+![Local AI](https://img.shields.io/badge/AI-Local_Ollama-8A2BE2)
+![No cloud](https://img.shields.io/badge/data-stays_local-success)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/NarendraKarki/cyber_threat_intel?quickstart=1)
+
 An AI-agent application that, **when triggered**, fetches cyber threat
 intelligence from reputable sources and presents it across three sector
 dashboards: **Financial**, **Healthcare**, and **Government**.
@@ -131,3 +137,7 @@ cti_agent/
   30–90 s. The agent gives it a longer timeout + retries and **skips it
   gracefully** if it still fails (the sweep always completes on CISA KEV +
   Advisories). For consistently fast sweeps, disable NVD with **`CTI_MAX_NVD=0`**.
+
+## License
+
+[MIT](LICENSE) © Narendra Karki
