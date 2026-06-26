@@ -1,0 +1,91 @@
+# Sentinel CTI — AI Threat-Intelligence Agent
+
+An AI-agent application that, **when triggered**, fetches cyber threat
+intelligence from reputable sources and presents it across three sector
+dashboards: **Financial**, **Healthcare**, and **Government**.
+
+It is built entirely on the Python standard library (no web framework) and
+uses a **local Ollama model** for reasoning, so it runs offline with no API
+keys and no cloud calls.
+
+## What the agent does
+
+The agent runs a multi-step pipeline on each sweep:
+
+1. **Collect** — pulls live intel from reputable sources:
+   - **CISA Known Exploited Vulnerabilities (KEV)** catalog — vulnerabilities
+     confirmed to be actively exploited in the wild.
+   - **CISA Cybersecurity Advisories** (RSS) — ICS/OT and product advisories.
+   - **NIST NVD** — CVEs published in the last `CTI_NVD_DAYS` days, with real
+     CVSS base severities.
+   - **abuse.ch ThreatFox** — in-the-wild malware IOCs. Requires a free
+     `Auth-Key`; **skipped gracefully** when `ABUSE_CH_KEY` is unset (so it
+     never errors and never floods the panels with unmapped indicators).
+2. **Classify** — maps each item to the sector(s) it threatens. A fast
+   word-boundary keyword/vendor pre-pass handles obvious cases; the LLM resolves
+   the rest in small batches. Within each panel, intel is ranked by relevance
+   tier — **explicit sector keyword > LLM-judged relevant > broadly-critical
+   fill** — then by *actively-exploited > severity > ransomware > recency*. So
+   each panel leads with genuinely sector-specific intel, and actively-exploited
+   critical threats still surface everywhere (no panel is starved).
+3. **Enrich** — the LLM writes a one-sentence, sector-specific risk analysis
+   and a concrete recommended action for each top threat.
+4. **Brief** — the LLM writes a short executive briefing per sector.
+
+Every LLM step **degrades gracefully**: if Ollama is unavailable, the agent
+falls back to deterministic heuristics and source-provided remediation text, so
+a sweep always returns useful output.
+
+## Run it
+
+```bash
+cd "/Users/radium/ai projects/threat intel"
+pip3 install -r requirements.txt   # first time only (certifi)
+python3 -m cti_agent.server
+# open http://127.0.0.1:8077  and click "Run Intelligence Sweep"
+```
+
+A sweep with the LLM enabled takes a few minutes on a local CPU model.
+
+### CLI / JSON
+
+```bash
+python3 -m cti_agent.agent            # run a sweep, print JSON to stdout
+CTI_LLM=0 python3 -m cti_agent.agent  # heuristics only (fast, no model)
+```
+
+## Configuration (environment variables)
+
+| Variable            | Default               | Purpose                                   |
+|---------------------|-----------------------|-------------------------------------------|
+| `CTI_MODEL`         | `llama3:latest`       | Ollama model for reasoning                |
+| `OLLAMA_HOST`       | `http://localhost:11434` | Ollama endpoint                        |
+| `CTI_LLM`           | `1`                   | Set `0` to disable the LLM (heuristics)   |
+| `CTI_LLM_TIMEOUT`   | `60`                  | Per-LLM-call timeout (seconds)            |
+| `CTI_MAX_KEV`       | `60`                  | Max recent KEV items to ingest            |
+| `CTI_MAX_RSS`       | `40`                  | Max recent advisories to ingest           |
+| `CTI_MAX_NVD`       | `50`                  | Max recent NVD CVEs to ingest             |
+| `CTI_NVD_DAYS`      | `7`                   | NVD look-back window (days)               |
+| `ABUSE_CH_KEY`      | _(unset)_             | abuse.ch Auth-Key; enables ThreatFox      |
+| `CTI_MAX_PER_SECTOR`| `8`                   | Max threats shown per sector              |
+
+## Layout
+
+```
+cti_agent/
+  config.py    sectors, keyword maps, source URLs, LLM settings
+  net.py       verified-TLS context + resilient HTTP GET/POST (urllib → curl fallback)
+  sources.py   CISA KEV + CISA Advisories + NVD + ThreatFox fetchers (normalized)
+  llm.py       Ollama client with graceful degradation
+  agent.py     CTIAgent — collect → classify → enrich → brief
+  server.py    stdlib dashboard + /api/sweep trigger
+  preview.py   dev launcher that preloads a cached report
+```
+
+## Notes
+
+- TLS verification stays **on**; the `certifi` CA bundle is used when present.
+  CISA is fronted by a CDN that rejects stdlib `urllib` at the TLS-fingerprint
+  level, so `net.py` transparently falls back to the system `curl`.
+- Sources are public and unauthenticated. This is a **defensive** tool: it only
+  reads and summarizes published threat data.
