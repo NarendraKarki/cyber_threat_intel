@@ -68,6 +68,7 @@ display:flex;align-items:center;gap:8px}
 .sev{font-weight:700;color:#04121f}
 .Critical{background:var(--crit)}.High{background:var(--high)}.Medium{background:var(--med)}
 .Low{background:var(--low)}.Unknown{background:#46546e;color:#fff}
+.Advisory{background:#3a4a63;color:#fff}
 .ransom{background:#ff4d5e;color:#fff;border:0}
 .live{background:#103a2a;border-color:#1f6f4a;color:#48d49b}
 .when{font-size:11px;color:var(--muted);margin:6px 0 2px}

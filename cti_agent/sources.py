@@ -121,7 +121,9 @@ def fetch_cisa_advisories():
             "source": "CISA Advisories",
             "url": link.strip(),
             "published": published.strip(),
-            "severity": "Unknown",
+            # CISA advisories carry no CVSS score; label them clearly rather
+            # than showing a bare "Unknown" severity.
+            "severity": "Advisory",
             "tags": [],
             "ransomware": False,
             "exploited": False,
