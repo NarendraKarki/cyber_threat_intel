@@ -5,7 +5,8 @@
   "portsAttributes": {
     "8077": {
       "label": "Cyber Threat Intel Agent dashboard",
-      "onAutoForward": "openBrowser"
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
     }
   },
   "remoteEnv": {
