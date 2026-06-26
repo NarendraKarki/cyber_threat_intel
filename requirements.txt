@@ -3,3 +3,4 @@
 certifi>=2024.0.0
 defusedxml>=0.7.0
 defusedxml>=0.7.0
+defusedxml>=0.7.0
