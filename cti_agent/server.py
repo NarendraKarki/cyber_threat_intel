@@ -69,6 +69,9 @@ display:flex;align-items:center;gap:8px}
 .Critical{background:var(--crit)}.High{background:var(--high)}.Medium{background:var(--med)}
 .Low{background:var(--low)}.Unknown{background:#46546e;color:#fff}
 .ransom{background:#ff4d5e;color:#fff;border:0}
+.live{background:#103a2a;border-color:#1f6f4a;color:#48d49b}
+.when{font-size:11px;color:var(--muted);margin:6px 0 2px}
+.when b{color:#b9c6db;font-weight:600}
 .an{font-size:12.5px;color:#cdd8ea;margin:4px 0}
 .ac{font-size:12px;color:#8fe0bf;margin-top:5px}.ac b{color:#48d49b}
 .src a{color:var(--accent);text-decoration:none;font-size:11.5px}
@@ -98,6 +101,13 @@ display:flex;align-items:center;gap:8px}
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>(s||"").replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function when(s){
+  if(!s)return"";
+  const d=new Date(s); if(isNaN(d))return esc(s);
+  const days=Math.floor((Date.now()-d)/86400000);
+  const age=days<=0?"today":days===1?"1 day ago":days+" days ago";
+  return `${d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})} · ${age}`;
+}
 function render(rep){
   const l=rep.llm.enabled?`LLM: ${rep.llm.model}`:"LLM: off (heuristics)";
   $("meta").innerHTML=`Generated ${esc(rep.generated_at)}<br>${esc(l)} · ${rep.total_raw} raw items · ${esc(rep.sources.join(", "))}`;
@@ -111,10 +121,12 @@ function render(rep){
       <div class="t">${esc(it.title)}</div>
       <div class="badges">
         <span class="badge sev ${esc(it.severity)}">${esc(it.severity)}</span>
+        ${it.active?`<span class="badge live" title="${esc(it.status||'Currently active')}">● ACTIVE</span>`:''}
         ${it.ransomware?'<span class="badge ransom">RANSOMWARE</span>':''}
         <span class="badge">${esc(it.source)}</span>
         ${(it.tags||[]).slice(0,2).map(t=>`<span class="badge">${esc(t)}</span>`).join("")}
       </div>
+      <div class="when"><b>Reported:</b> ${it.published?when(it.published):"—"}${it.status?` · ${esc(it.status)}`:""}</div>
       <div class="an">${esc(it.analysis)}</div>
       <div class="ac"><b>Action:</b> ${esc(it.action)}</div>
       <div class="src">${it.url?`<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.url)}</a>`:""}</div>

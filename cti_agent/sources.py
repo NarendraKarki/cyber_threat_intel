@@ -59,6 +59,9 @@ def fetch_cisa_kev():
             "tags": [t for t in (v.get("vendorProject"), v.get("product")) if t],
             "ransomware": ransomware,
             "exploited": True,  # KEV = confirmed actively exploited
+            # Re-fetched live each sweep, so its presence == still listed.
+            "active": True,
+            "status": "Listed in current CISA KEV catalog — actively exploited",
             "required_action": v.get("requiredAction", ""),
         })
     return items
@@ -99,6 +102,8 @@ def fetch_cisa_advisories():
             "tags": [],
             "ransomware": False,
             "exploited": False,
+            "active": True,
+            "status": "Current CISA advisory",
         })
     return items
 
@@ -160,6 +165,9 @@ def fetch_nvd_recent():
             "tags": tags,
             "ransomware": False,
             "exploited": False,
+            # Rejected CVEs are filtered out above, so what remains is live.
+            "active": True,
+            "status": f"NVD status: {cve.get('vulnStatus', 'Published')}",
         })
     rows.sort(key=lambda r: r["published"], reverse=True)
     return rows[: config.MAX_NVD_ITEMS]
@@ -194,6 +202,8 @@ def fetch_threatfox():
             "tags": [t for t in (malware, ioc.get("threat_type")) if t][:3],
             "ransomware": "ransom" in (ioc.get("malware") or "").lower(),
             "exploited": True,  # IOCs reflect in-the-wild activity
+            "active": True,
+            "status": f"ThreatFox IOC (first seen {(ioc.get('first_seen') or '')[:10]})",
         })
     return items
 
