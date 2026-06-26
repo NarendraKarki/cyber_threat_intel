@@ -41,9 +41,12 @@ a sweep always returns useful output.
 ```bash
 cd "/Users/radium/ai projects/threat intel"
 pip3 install -r requirements.txt   # first time only (certifi)
-python3 -m cti_agent.server
+./run.sh                           # or: python3 -m cti_agent.server
 # open http://127.0.0.1:8077  and click "Run Intelligence Sweep"
 ```
+
+`run.sh` starts Ollama automatically (if installed) and falls back to
+heuristics mode if it isn't.
 
 A sweep with the LLM enabled takes a few minutes on a local CPU model.
 
