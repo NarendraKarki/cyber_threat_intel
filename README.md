@@ -1,3 +1,26 @@
+> ⚠️ **Research Disclaimer**  
+> This repository is published for educational and research purposes only.
+> The vulnerabilities identified, attack patterns described, and remediation
+> techniques documented are intended to help security practitioners understand
+> and improve the security posture of AI agent systems.
+>
+> Use at your own risk. The author accepts no liability for any damage, loss,
+> or consequences arising from the use or misuse of any information contained
+> in this repository.
+>
+> If you deploy or adapt any code from this repository, ensure you:
+> - Harden your LLM system prompts with injection-resistance instructions
+> - Sanitise all external data before it enters any LLM prompt
+> - Replace standard XML parsers with security-hardened equivalents
+> - Apply the principle of least privilege to all agent tool access
+> - Review against the OWASP Top 10 for Agentic Applications 2026 before
+>   production deployment
+>
+> **Do not use this code or these techniques against systems you do not
+> own or have explicit written permission to test.**
+
+---
+
 # Cyber Threat Intel Agent
 
 ![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
